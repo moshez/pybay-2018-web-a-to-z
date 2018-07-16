@@ -2,10 +2,11 @@ FROM debian:stretch
 
 RUN \
   apt-get update && \
-  apt-get install -y curl git build-essential && \
+  apt-get install -y curl git build-essential zlib1g-dev && \
   export \
     PROJECT=pyenv/pyenv-installer \
     SITE=https://github.com \
     WPATH=bin/pyenv-installer  && \
   curl -L $SITE/$PROJECT/raw/master/$WPATH \
-  | bash
+  | bash && \
+  /root/.pyenv/bin/pyenv install 3.7.0                     
