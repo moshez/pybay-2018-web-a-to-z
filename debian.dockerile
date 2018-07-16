@@ -1,0 +1,11 @@
+FROM debian:stretch
+
+RUN \
+  apt-get update && \
+  apt-get install -y curl git build-essential && \
+  export \
+    PROJECT=pyenv/pyenv-installer \
+    SITE=https://github.com \
+    WPATH=bin/pyenv-installer  && \
+  curl -L $SITE/$PROJECT/raw/master/$WPATH \
+  | bash
