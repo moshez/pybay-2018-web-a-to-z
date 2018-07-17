@@ -2,11 +2,25 @@ FROM debian:stretch
 
 RUN \
   apt-get update && \
-  apt-get install -y curl git build-essential zlib1g-dev && \
+  apt-get install -y  \
+    make build-essential libssl-dev zlib1g-dev libbz2-dev \
+    libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \
+    libncursesw5-dev xz-utils tk-dev libffi-dev git && \
   export \
     PROJECT=pyenv/pyenv-installer \
     SITE=https://github.com \
     WPATH=bin/pyenv-installer  && \
   curl -L $SITE/$PROJECT/raw/master/$WPATH \
   | bash && \
-  /root/.pyenv/bin/pyenv install 3.7.0                     
+  /root/.pyenv/bin/pyenv install 3.7.0
+
+RUN mkdir -p /opt/pybay/webaz
+
+COPY requirements.txt webpack.config.js webpack.config2.js /opt/pybay/webaz
+
+RUN \
+  /root/.pyenv/bin/pyenv global 3.7.0 && \
+  $(/root/.pyenv/bin/pyenv which python3) -m venv \
+     /opt/pybay/webaz/venv-webaz && \
+  /opt/pybay/webaz/venv-webaz/bin/pip install -r \
+    /opt/pybay/webaz/requirements.txt
