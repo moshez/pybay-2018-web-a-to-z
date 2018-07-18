@@ -5,7 +5,7 @@ RUN \
   apt-get install -y  \
     make build-essential libssl-dev zlib1g-dev libbz2-dev \
     libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev \
-    libncursesw5-dev xz-utils tk-dev libffi-dev git && \
+    libncursesw5-dev xz-utils tk-dev libffi-dev git apt-transport-https && \
   export \
     PROJECT=pyenv/pyenv-installer \
     SITE=https://github.com \
@@ -16,7 +16,8 @@ RUN \
 
 RUN mkdir -p /opt/pybay/webaz
 
-COPY requirements.txt webpack.config.js webpack.config2.js /opt/pybay/webaz
+COPY package.json requirements.txt webpack.config.js webpack.config2.js \
+     /opt/pybay/webaz/
 
 RUN \
   /root/.pyenv/bin/pyenv global 3.7.0 && \
@@ -24,3 +25,15 @@ RUN \
      /opt/pybay/webaz/venv-webaz && \
   /opt/pybay/webaz/venv-webaz/bin/pip install -r \
     /opt/pybay/webaz/requirements.txt
+
+RUN \
+  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+  curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
+  echo "deb https://deb.nodesource.com/node_8.x stretch main" > \
+    /etc/apt/sources.list.d/node.list && \
+  echo "deb https://dl.yarnpkg.com/debian/ stable main" > \
+    /etc/apt/sources.list.d/yarn.list && \
+  apt-get update && \
+  apt-get install -y nodejs yarn
+
+COPY package.json /opt/pybay/webaz/

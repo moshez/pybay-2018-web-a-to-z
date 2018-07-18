@@ -1,2 +1,4 @@
 Pyramid
+Twisted
 SQLalchemy
+jupyterlab
