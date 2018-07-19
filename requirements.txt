@@ -2,3 +2,4 @@ Pyramid
 Twisted
 SQLalchemy
 jupyterlab
+ncolony
