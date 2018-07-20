@@ -37,3 +37,16 @@ RUN \
   apt-get install -y nodejs yarn
 
 COPY package.json /opt/pybay/webaz/
+
+RUN mkdir -p /opt/pybay/webaz/run/ncolony/messages && \
+    mkdir -p /opt/pybay/webaz/run/ncolony/config && \
+    /opt/pybay/webaz/venv-webaz/bin/python -m ncolony ctl \
+    --messages /opt/pybay/webaz/run/ncolony/messages \
+    --config /opt/pybay/webaz/run/ncolony/config \
+    add jupyter --cmd /opt/pybay/webaz/venv-webaz/bin/jupyter \
+    --arg lab --arg='--ip=0.0.0.0' --arg=--allow-root
+
+ENTRYPOINT ["/opt/pybay/webaz/venv-webaz/bin/python", "-m", "twisted", \
+            "ncolony", \
+            "--messages", "/opt/pybay/webaz/run/ncolony/messages/", \
+            "--config", "/opt/pybay/webaz/run/ncolony/config/"]
