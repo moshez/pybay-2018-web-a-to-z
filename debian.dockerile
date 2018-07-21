@@ -36,7 +36,10 @@ RUN \
   apt-get update && \
   apt-get install -y nodejs yarn
 
-COPY package.json /opt/pybay/webaz/
+COPY blog /opt/pybay/webaz/blog/
+COPY src /opt/pybay/webaz/src/
+COPY twisted /opt/pybay/webaz/twisted/
+COPY index.html handout.pdf talk.pdf /opt/pybay/webaz/
 
 RUN mkdir -p /opt/pybay/webaz/run/ncolony/messages && \
     mkdir -p /opt/pybay/webaz/run/ncolony/config && \

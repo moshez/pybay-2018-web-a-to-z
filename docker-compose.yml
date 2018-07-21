@@ -1,0 +1,8 @@
+version: '3'
+services:
+  web:
+    image: "moshez/pybay-2018-web-a-to-z:latest"
+    ports:
+     - "8888:8888"
+     - "8080:8080"
+    container_name: webaz
