@@ -41,23 +41,21 @@ RUN mkdir -p /opt/pybay/webaz/run/ncolony/messages && \
     add jupyter --cmd /opt/pybay/webaz/venv-webaz/bin/jupyter \
     --arg lab --arg='--ip=0.0.0.0' --arg=--allow-root
 
+RUN export NVM_DIR=/opt/pybay/webaz/nvm && \
+    mkdir $NVM_DIR && \
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash && \
+    . $NVM_DIR/nvm.sh && \
+    nvm install node && \
+    npm install -g yarn && \
+    cd /opt/pybay/webaz && yarn install
+
 FROM debian:stretch
 
 COPY --from=0 /opt/pybay/webaz /opt/pybay/webaz/
 
 RUN \
   apt-get update && \
-  apt-get install -y  \
-    curl git apt-transport-https gnupg && \
-  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-  curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
-  echo "deb https://deb.nodesource.com/node_8.x stretch main" > \
-    /etc/apt/sources.list.d/node.list && \
-  echo "deb https://dl.yarnpkg.com/debian/ stable main" > \
-    /etc/apt/sources.list.d/yarn.list && \
-  apt-get update && \
-  apt-get install -y nodejs yarn && \
-  cd /opt/pybay/webaz && yarn install
+  apt-get install -y  libffi6 libsqlite3-0
 
 ENTRYPOINT ["/opt/pybay/webaz/venv-webaz/bin/python", "-m", "twisted", \
             "ncolony", \
