@@ -1,5 +1,7 @@
 FROM debian:stretch
 
+RUN mkdir -p /opt/pybay/webaz
+
 RUN \
   apt-get update && \
   apt-get install -y  \
@@ -9,37 +11,27 @@ RUN \
   export \
     PROJECT=pyenv/pyenv-installer \
     SITE=https://github.com \
-    WPATH=bin/pyenv-installer  && \
+    WPATH=bin/pyenv-installer  \
+    PYENV_ROOT=/opt/pybay/webaz/pyenv && \
   curl -L $SITE/$PROJECT/raw/master/$WPATH \
   | bash && \
-  /root/.pyenv/bin/pyenv install 3.7.0
-
-RUN mkdir -p /opt/pybay/webaz
+  /opt/pybay/webaz/pyenv/bin/pyenv install 3.7.0
 
 COPY package.json requirements.txt webpack.config.js webpack.config2.js \
      /opt/pybay/webaz/
 
 RUN \
-  /root/.pyenv/bin/pyenv global 3.7.0 && \
-  $(/root/.pyenv/bin/pyenv which python3) -m venv \
+  export PYENV_ROOT=/opt/pybay/webaz/pyenv && \
+  /opt/pybay/webaz/pyenv/bin/pyenv global 3.7.0 && \
+  $(/opt/pybay/webaz/pyenv/bin/pyenv which python3) -m venv \
      /opt/pybay/webaz/venv-webaz && \
   /opt/pybay/webaz/venv-webaz/bin/pip install -r \
     /opt/pybay/webaz/requirements.txt
 
-RUN \
-  curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-  curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
-  echo "deb https://deb.nodesource.com/node_8.x stretch main" > \
-    /etc/apt/sources.list.d/node.list && \
-  echo "deb https://dl.yarnpkg.com/debian/ stable main" > \
-    /etc/apt/sources.list.d/yarn.list && \
-  apt-get update && \
-  apt-get install -y nodejs yarn
-
 COPY blog /opt/pybay/webaz/blog/
 COPY src /opt/pybay/webaz/src/
 COPY twisted /opt/pybay/webaz/twisted/
-COPY index.html handout.pdf talk.pdf /opt/pybay/webaz/
+COPY index.html handout.pdf talk.pdf .babelrc /opt/pybay/webaz/
 
 RUN mkdir -p /opt/pybay/webaz/run/ncolony/messages && \
     mkdir -p /opt/pybay/webaz/run/ncolony/config && \
@@ -48,6 +40,22 @@ RUN mkdir -p /opt/pybay/webaz/run/ncolony/messages && \
     --config /opt/pybay/webaz/run/ncolony/config \
     add jupyter --cmd /opt/pybay/webaz/venv-webaz/bin/jupyter \
     --arg lab --arg='--ip=0.0.0.0' --arg=--allow-root
+
+RUN export NVM_DIR=/opt/pybay/webaz/nvm && \
+    mkdir $NVM_DIR && \
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash && \
+    . $NVM_DIR/nvm.sh && \
+    nvm install node && \
+    npm install -g yarn && \
+    cd /opt/pybay/webaz && yarn install
+
+FROM debian:stretch
+
+COPY --from=0 /opt/pybay/webaz /opt/pybay/webaz/
+
+RUN \
+  apt-get update && \
+  apt-get install -y  libffi6 libsqlite3-0
 
 ENTRYPOINT ["/opt/pybay/webaz/venv-webaz/bin/python", "-m", "twisted", \
             "ncolony", \
