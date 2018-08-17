@@ -8,7 +8,7 @@ Step 1: Get file
 
 Download `docker-compose.yml`_
 
-.. _docker-compose.yml: https://github.com/moshez/pybay-2018-web-a-to-z/blob/master/docker-compose.yml
+.. _docker-compose.yml: https://raw.githubusercontent.com/moshez/pybay-2018-web-a-to-z/master/docker-compose.yml
 
 Step 2: Install Docker and Docker-Compose
 =========================================
