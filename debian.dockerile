@@ -30,6 +30,7 @@ RUN \
 
 COPY blog /opt/pybay/webaz/blog/
 COPY src /opt/pybay/webaz/src/
+COPY static /opt/pybay/webaz/static/
 COPY twisted /opt/pybay/webaz/twisted/
 COPY index.html handout.pdf talk.pdf .babelrc /opt/pybay/webaz/
 
@@ -57,6 +58,6 @@ COPY --from=0 /opt/pybay/webaz /opt/pybay/webaz/
 
 RUN \
   apt-get update && \
-  apt-get install -y  libffi6 libsqlite3-0
+  apt-get install -y  libffi6 libsqlite3-0 libssl1.1
 
 ENTRYPOINT ["/opt/pybay/webaz/entrypoint.sh"]
